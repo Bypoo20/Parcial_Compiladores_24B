@@ -1,0 +1,11 @@
+def funcion(a, b) {
+    while (a < 10) {
+        a = a + 5 @
+        if (a >= 7) {
+            print("El valor de a es", a) @
+        } else {
+            a = 0 @
+        }
+    }
+    return a @
+}

@@ -1,0 +1,16 @@
+def calcular(c, d) {
+    while (c <= 50) {
+        c = c + 10 @
+        if (c > 30 and d < 20) {
+            print("Valores:", c, d) @
+        } elif (c == 40) {
+            print("c es igual a 40") @
+        } else {
+            d = d * 2 @
+        }
+        if (d >= 100) {
+            break @
+        }
+    }
+    return d @
+}
