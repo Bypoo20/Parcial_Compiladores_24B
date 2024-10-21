@@ -47,32 +47,33 @@ La estructura del proyecto es la siguiente:
     └── ExamenParcialCompiladores.zip
 ```
 
+
 ## Descripción de Carpetas
 
-### 1. **Codigos**
+### 1. **[Codigos](./Codigos)**
 Esta carpeta contiene los scripts principales del proyecto:
-- **AnalizadorSintactico.py**: Implementación del analizador sintáctico basado en la gramática LL(1).
-- **arbol_sintactico.png**: Imagen que muestra el árbol sintáctico generado.
-- **Generar_Arbol.py**: Script para generar el árbol sintáctico en formato gráfico.
-- **Gramatica.txt**: Archivo de texto que contiene la definición de la gramática utilizada.
-- **Lexer_Python_ES.py**: Implementación del analizador léxico para el lenguaje definido.
-- **ll1_table.csv**: Tabla LL(1) generada a partir de la gramática.
-- **no_terminales.txt**: Lista de no terminales de la gramática.
-- **rastreo.csv**: Archivo CSV que contiene el rastreo del análisis sintáctico.
-- **Tabla_Sintactica.py**: Script para generar y manejar la tabla sintáctica LL(1).
-- **tokens.txt**: Archivo que contiene los tokens generados por el lexer.
+- **[AnalizadorSintactico.py](./Codigos/AnalizadorSintactico.py)**: Implementación del analizador sintáctico basado en la gramática LL(1).
+- **[arbol_sintactico.png](./Codigos/arbol_sintactico.png)**: Imagen que muestra el árbol sintáctico generado.
+- **[Generar_Arbol.py](./Codigos/Generar_Arbol.py)**: Script para generar el árbol sintáctico en formato gráfico.
+- **[Gramatica.txt](./Codigos/Gramatica.txt)**: Archivo de texto que contiene la definición de la gramática utilizada.
+- **[Lexer_Python_ES.py](./Codigos/Lexer_Python_ES.py)**: Implementación del analizador léxico para el lenguaje definido.
+- **[ll1_table.csv](./Codigos/ll1_table.csv)**: Tabla LL(1) generada a partir de la gramática.
+- **[no_terminales.txt](./Codigos/no_terminales.txt)**: Lista de no terminales de la gramática.
+- **[rastreo.csv](./Codigos/rastreo.csv)**: Archivo CSV que contiene el rastreo del análisis sintáctico.
+- **[Tabla_Sintactica.py](./Codigos/Tabla_Sintactica.py)**: Script para generar y manejar la tabla sintáctica LL(1).
+- **[tokens.txt](./Codigos/tokens.txt)**: Archivo que contiene los tokens generados por el lexer.
 
-### 2. **Ejemplos**
+### 2. **[Ejemplos](./Ejemplos)**
 Cada subcarpeta en **Ejemplos** contiene:
 - **arbol_sintactico.png**: Visualización del árbol sintáctico generado.
 - **CodigoPrueba.txt**: Código fuente utilizado como entrada de prueba para el analizador.
 - **rastreo.csv**: Rastreo de las reglas sintácticas aplicadas.
 - **tokens.txt**: Tokens generados durante el análisis léxico.
 
-### 3. **Latex**
+### 3. **[Latex](./Latex)**
 Esta carpeta contiene los archivos relacionados con la documentación del proyecto:
-- **ExamenParcialCompiladores.pdf**: Documento PDF generado como parte de los exámenes o pruebas parciales del curso.
-- **ExamenParcialCompiladores.zip**: Archivo comprimido con los archivos LaTeX y otros recursos.
+- **[ExamenParcialCompiladores.pdf](./Latex/ExamenParcialCompiladores.pdf)**: Documento PDF generado como parte de los exámenes o pruebas parciales del curso.
+- **[ExamenParcialCompiladores.zip](./Latex/ExamenParcialCompiladores.zip)**: Archivo comprimido con los archivos LaTeX y otros recursos.
 
 ## Requisitos del Sistema
 
@@ -86,7 +87,6 @@ Esta carpeta contiene los archivos relacionados con la documentación del proyec
    ```bash
    git clone https://github.com/usuario/proyecto-analisis-sintactico.git
    cd proyecto-analisis-sintactico
-   ```
 
 2. Instala las dependencias necesarias:
    ```bash
