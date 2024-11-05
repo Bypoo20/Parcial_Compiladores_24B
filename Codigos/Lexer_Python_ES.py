@@ -113,20 +113,24 @@ lexer = lex.lex()
 
 # Prueba del lexer con condicional
 data = '''
+x = 220 @
 def hola(){
+    h = "hola" @
+}
+def adios(){
 }
 '''
 
 lexer.input(data)
 
-# Tokenizar e imprimir solo los tipos de tokens separados por un espacio
+# Tokenizar e imprimir los tipos de tokens junto con sus valores
 tokens_list = []
 
 while True:
     tok = lexer.token()
     if not tok:
         break
-    tokens_list.append(tok.type)
+    tokens_list.append(f"{tok.type}:{tok.value}")
 
 # Guardar los tokens en un archivo tokens.txt
 with open("tokens.txt", "w") as file:

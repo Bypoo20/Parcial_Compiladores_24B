@@ -2,9 +2,10 @@ import csv
 from graphviz import Digraph
 
 class Nodo:
-    def __init__(self, etiqueta, identificador):
+    def __init__(self, etiqueta, identificador, valor=None):
         self.etiqueta = etiqueta
         self.identificador = identificador
+        self.valor = valor  # Valor del nodo, como el valor del identificador
         self.hijos = []
 
     def agregar_hijo(self, hijo):
@@ -30,6 +31,7 @@ def generar_arbol_sintactico(rastreo, nombre_archivo):
     # Crear nodos usando las reglas de la traza
     for entrada in rastreo:
         regla = entrada['Rule']
+        input_tokens = entrada['Input'].split()
         if '->' in regla:
             cabeza, produccion = regla.split('->')
             cabeza = cabeza.strip()
@@ -57,9 +59,24 @@ def generar_arbol_sintactico(rastreo, nombre_archivo):
             # Crear nodos para cada símbolo en la producción y conectarlos correctamente
             for simbolo in simbolos_produccion:
                 identificador_nodo_simbolo = f"{simbolo}_{contador_nodos}"
-                nodo_simbolo = Nodo(simbolo, identificador_nodo_simbolo)
+                valor_nodo = None
+
+                # Buscar el valor del símbolo en la entrada
+                for token in input_tokens:
+                    if simbolo in token:
+                        tipo, valor = token.split(':')
+                        if tipo == simbolo:
+                            valor_nodo = valor
+                            break
+
+                if valor_nodo:
+                    nodo_simbolo = Nodo(simbolo, identificador_nodo_simbolo, valor=valor_nodo)
+                    dot.node(nodo_simbolo.identificador, f"{simbolo}\nValor: {valor_nodo}")
+                else:
+                    nodo_simbolo = Nodo(simbolo, identificador_nodo_simbolo)
+                    dot.node(nodo_simbolo.identificador, f"{simbolo}")
+
                 nodos[identificador_nodo_simbolo] = nodo_simbolo
-                dot.node(nodo_simbolo.identificador, simbolo)
                 contador_nodos += 1
 
                 # Conectar el nodo cabeza con el nodo símbolo
@@ -69,40 +86,48 @@ def generar_arbol_sintactico(rastreo, nombre_archivo):
                 # Asegurarse de que los nodos hijos también puedan tener relaciones correctas
                 nodos[simbolo] = nodo_simbolo
 
-    # Verificar y agregar nodo epsilon para nodos hoja sin hijos que estén en no_terminales.txt
-    agregar_epsilon_a_hojas_sin_hijos(nodos, 'no_terminales.txt', dot)
-
-    # Resaltar nodos hojas sin hijos con relleno amarillo
-    resaltar_hojas_sin_hijos(nodos, dot)
-
+    # Renderizar el árbol sintáctico
     dot.render(nombre_archivo, format='png', cleanup=True)
     print(f"Árbol sintáctico guardado en {nombre_archivo}.png")
+    return raiz, nodos, dot
 
-def agregar_epsilon_a_hojas_sin_hijos(nodos, no_terminales_file, dot):
-    with open(no_terminales_file, 'r') as file:
-        no_terminales = {line.strip() for line in file}
-    
-    for nodo in nodos.values():
-        if not nodo.hijos and nodo.etiqueta in no_terminales:
-            # Crear un nodo hijo con el símbolo epsilon
-            identificador_nodo_epsilon = f"epsilon_{nodo.identificador}"
-            nodo_epsilon = Nodo("ε", identificador_nodo_epsilon)
-            nodo.agregar_hijo(nodo_epsilon)
-            dot.node(nodo_epsilon.identificador, "ε", style='filled', fillcolor='yellow')
-            dot.edge(nodo.identificador, nodo_epsilon.identificador)
+def agregar_nodo_epsilon_a_hojas(raiz, no_terminales, nodos, dot):
+    # Recorrer todos los nodos para encontrar hojas sin hijos
+    def recorrer_nodos(nodo):
+        if not nodo.hijos:  # Es una hoja
+            etiqueta_normalizada = nodo.etiqueta.strip("' ")
+            if etiqueta_normalizada in no_terminales:  # Verificar si es un no terminal
+                # Agregar un nodo hijo con el símbolo epsilon
+                nodo_epsilon = Nodo('ε', f"N{len(nodos)}")
+                nodo.agregar_hijo(nodo_epsilon)
+                nodos[nodo_epsilon.identificador] = nodo_epsilon
+                dot.node(nodo_epsilon.identificador, 'ε')
+                dot.edge(nodo.identificador, nodo_epsilon.identificador)
+        else:
+            for hijo in nodo.hijos:
+                recorrer_nodos(hijo)
 
-def resaltar_hojas_sin_hijos(nodos, dot):
-    for nodo in nodos.values():
-        if not nodo.hijos:
-            # Resaltar el nodo hoja con relleno amarillo
-            dot.node(nodo.identificador, nodo.etiqueta, style='filled', fillcolor='yellow')
+    recorrer_nodos(raiz)
+
+def cargar_no_terminales(nombre_archivo):
+    with open(nombre_archivo, 'r') as archivo:
+        return [line.strip("'\n ") for line in archivo]
 
 def main():
     nombre_archivo_rastreo = 'rastreo.csv'
     nombre_archivo_arbol = 'arbol_sintactico'
+    nombre_archivo_no_terminales = 'no_terminales.txt'
 
     rastreo = cargar_rastreo(nombre_archivo_rastreo)
-    generar_arbol_sintactico(rastreo, nombre_archivo_arbol)
+    no_terminales = cargar_no_terminales(nombre_archivo_no_terminales)
+    raiz, nodos, dot = generar_arbol_sintactico(rastreo, nombre_archivo_arbol)
+
+    # Agregar nodos epsilon a las hojas que sean no terminales
+    if raiz:
+        agregar_nodo_epsilon_a_hojas(raiz, no_terminales, nodos, dot)
+
+    # Renderizar nuevamente el árbol con los nodos epsilon agregados
+    dot.render("arbol_sintactico", format='png', cleanup=True)
 
 if __name__ == "__main__":
     main()

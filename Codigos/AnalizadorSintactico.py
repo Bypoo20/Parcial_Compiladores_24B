@@ -23,7 +23,9 @@ class LLParser:
 
     def _load_tokens(self, tokens_file):
         with open(tokens_file, 'r') as f:
-            self.tokens = f.read().strip().split()
+            tokens = f.read().strip().split()
+            # Guardar el tipo y valor de cada token en una tupla
+            self.tokens = [(token.split(':')[0], token.split(':')[1]) for token in tokens]
 
     def _collect_alphabet_and_symbols(self):
         for rule in self.rules:
@@ -55,24 +57,26 @@ class LLParser:
     def parse_input(self):
         stack = ['$', self.nonterminals[0]]
         index = 0
-        input_tokens = self.tokens + ['$']
+        input_tokens = self.tokens + [('$', '$')]
 
         rows = []
         while len(stack) > 0:
             top = stack.pop()
-            current_token = input_tokens[index]
-            rule = self.rule_table.get(top, {}).get(current_token) if top in self.nonterminals else ""
+            current_token_type, current_token_value = input_tokens[index]
+            rule = self.rule_table.get(top, {}).get(current_token_type) if top in self.nonterminals else ""
 
-            rows.append([" ".join(stack), " ".join(input_tokens[index:]), f"{top} -> {rule.split('->')[1].strip()}" if rule else "Accept" if top == '$' and current_token == '$' else ""])
-
-            if top == current_token:
+            if top == current_token_type:
+                # Consumir el token y avanzar
                 index += 1
             elif top in self.terminals or top == '$':
-                rows.append(["Error: terminal mismatch."])
-                break
+                if top == current_token_type:
+                    index += 1
+                else:
+                    rows.append(["Error: terminal mismatch."])
+                    break
             elif top in self.nonterminals:
                 if rule is None:
-                    rows.append([f"Error: no rule for nonterminal '{top}' with token '{current_token}'"])
+                    rows.append([f"Error: no rule for nonterminal '{top}' with token '{current_token_type}'"])
                     break
                 _, rhs = rule.split('->')
                 symbols = rhs.strip().split()
@@ -81,6 +85,13 @@ class LLParser:
             else:
                 rows.append(["Error: unknown symbol on stack."])
                 break
+
+            # Guardar el proceso en el rastreo, incluyendo el valor del token solo en la entrada
+            rows.append([
+                " ".join(stack),
+                " ".join([f"{tok[0]}:{tok[1]}" for tok in input_tokens[index:]]),
+                f"{top} -> {rhs.strip()}" if rule else "Accept" if top == '$' and current_token_type == '$' else ""
+            ])
 
         self._export_parsing_process_to_csv("rastreo.csv", rows)
 
